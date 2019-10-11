@@ -5,6 +5,8 @@ using GraphqlApi.Contracts;
 using GraphqlApi.Contracts.Repositories;
 using GraphqlApi.Entities.Context;
 using GraphqlApi.GraphQL.AppSchema;
+using GraphqlApi.GraphQL.Queries;
+using GraphqlApi.GraphQL.Types;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -31,13 +33,13 @@ namespace GraphqlApi
             services.AddDbContext<ApplicationContext>(opt =>
                 opt.UseSqlServer(Configuration.GetConnectionString("DbConnectionString")));
 
-            services.AddScoped<IOwnerRepository, OwnerRepository>();
-            services.AddScoped<IAccountRepository, AccountRepository>();
+            services.AddTransient<IOwnerRepository, OwnerRepository>();
+            services.AddTransient<IAccountRepository, AccountRepository>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
 
-            this.RegisterGraphQLServices(services);
+            this.ConfigureGraphQLServices(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,9 +60,17 @@ namespace GraphqlApi
             app.UseMvc();
         }
 
-        private void RegisterGraphQLServices(IServiceCollection services)
+        private void ConfigureGraphQLServices(IServiceCollection services)
         {
+            services.AddScoped<IDocumentExecuter, DocumentExecuter>();
             services.AddScoped<ApplicationSchema>();
+
+            //Queries, Mutations, Supcriptions
+            services.AddSingleton<OwnerQuery>();
+
+            //Types
+            services.AddSingleton<OwnerType>();
+
             services.AddScoped<IServiceProvider>(serviceProvider => new FuncServiceProvider(serviceProvider.GetRequiredService));
             services.AddGraphQL(option =>
             {

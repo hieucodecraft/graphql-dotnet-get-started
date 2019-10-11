@@ -4,9 +4,9 @@ using GraphqlApi.GraphQL.Types;
 
 namespace GraphqlApi.GraphQL.Queries
 {
-    public class Query : ObjectGraphType
+    public class OwnerQuery : ObjectGraphType
     {
-        public Query(IOwnerRepository ownerRepository)
+        public OwnerQuery(IOwnerRepository ownerRepository)
         {
             Field<ListGraphType<OwnerType>>("owners", resolve: context => ownerRepository.GetAll());
         }

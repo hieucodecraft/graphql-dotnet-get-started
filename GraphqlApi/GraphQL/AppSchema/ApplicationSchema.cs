@@ -9,7 +9,7 @@ namespace GraphqlApi.GraphQL.AppSchema
     {
         public ApplicationSchema(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            Query = serviceProvider.GetRequiredService<Query>();
+            Query = serviceProvider.GetRequiredService<OwnerQuery>();
         }
     }
 }
